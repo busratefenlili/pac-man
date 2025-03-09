@@ -1,0 +1,93 @@
+import pygame
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Screen dimensions
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+# Colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+YELLOW = (255, 255, 0)
+RED = (255, 0, 0)
+
+# Pac-Man settings
+PACMAN_SIZE = 50
+PACMAN_SPEED = 5
+
+# Ghost settings
+GHOST_SIZE = 50
+GHOST_SPEED = 3
+
+# Create Pac-Man class
+class PacMan:
+    def __init__(self):
+        self.rect = pygame.Rect(SCREEN_WIDTH//2, SCREEN_HEIGHT//2, PACMAN_SIZE, PACMAN_SIZE)
+        self.speed = PACMAN_SPEED
+
+    def move(self, dx, dy):
+        self.rect.x += dx * self.speed
+        self.rect.y += dy * self.speed
+
+    def draw(self):
+        pygame.draw.ellipse(SCREEN, YELLOW, self.rect)
+
+# Create Ghost class
+class Ghost:
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x, y, GHOST_SIZE, GHOST_SIZE)
+        self.speed = GHOST_SPEED
+
+    def move(self):
+        direction = random.choice(['up', 'down', 'left', 'right'])
+        if direction == 'up':
+            self.rect.y -= self.speed
+        elif direction == 'down':
+            self.rect.y += self.speed
+        elif direction == 'left':
+            self.rect.x -= self.speed
+        elif direction == 'right':
+            self.rect.x += self.speed
+
+    def draw(self):
+        pygame.draw.ellipse(SCREEN, RED, self.rect)
+
+# Create game loop
+def game_loop():
+    pacman = PacMan()
+    ghosts = [Ghost(random.randint(0, SCREEN_WIDTH), random.randint(0, SCREEN_HEIGHT)) for _ in range(4)]
+    clock = pygame.time.Clock()
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            pacman.move(-1, 0)
+        if keys[pygame.K_RIGHT]:
+            pacman.move(1, 0)
+        if keys[pygame.K_UP]:
+            pacman.move(0, -1)
+        if keys[pygame.K_DOWN]:
+            pacman.move(0, 1)
+
+        SCREEN.fill(BLACK)
+        pacman.draw()
+        for ghost in ghosts:
+            ghost.move()
+            ghost.draw()
+
+        pygame.display.flip()
+        clock.tick(30)
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    game_loop()
